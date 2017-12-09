@@ -1,12 +1,9 @@
 import cv2
-import sys
-import logging as log
-import datetime as dt
 from time import sleep
 import DetectFace as dFace
 import FacialFeatures as dFeatures
 
-video_capture = cv2.VideoCapture(0)
+video_capture = cv2.VideoCapture('http://192.168.1.8:4747/mjpegfeed')
 
 while True:
     if not video_capture.isOpened():
