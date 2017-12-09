@@ -56,10 +56,15 @@ def getMouthPoints(onlyFaces, frame = None):
         gryFace = cv2.equalizeHist(gryFace)
 
         #Get intial mouth corners then iterate
-        iterateForMouthPoint(-1, maxLabel, bgrFace, boundingCoord, nColumns, gryFace, mouthHeight, mouthWidth, labels)
-        iterateForMouthPoint(1, maxLabel, bgrFace, boundingCoord, nColumns, gryFace, mouthHeight, mouthWidth, labels)
+        corners = []
+        corners.append(iterateForMouthPoint(-1, maxLabel, bgrFace, boundingCoord, nColumns, gryFace, mouthHeight, mouthWidth, labels))
+        corners.append(iterateForMouthPoint(1, maxLabel, bgrFace, boundingCoord, nColumns, gryFace, mouthHeight, mouthWidth, labels))
+
+        #Neutralize effect of halving face for coord
+        corners[0][0] += halfnRows
+        corners[1][0] += halfnRows
         
-    return []
+    return corners
 
 def iterateForMouthPoint(direction, maxLabel, bgrFace, boundingCoord, faceWidth, gryFace, mouthHeight, mouthWidth, labels):
     
@@ -113,5 +118,5 @@ def iterateForMouthPoint(direction, maxLabel, bgrFace, boundingCoord, faceWidth,
         variance = gradient.var()
     cv2.circle(bgrFace,(maxIndex[1],maxIndex[0]),2,(0,255,0))
 
-    return [] 
+    return corner
         
