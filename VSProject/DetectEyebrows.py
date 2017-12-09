@@ -68,13 +68,13 @@ def getEyebrowsPoints(onlyFace, frame = None):
                             if centroids[i,1] < ymin_l:
                                 ymin_l = centroids[i,1]
                                 min_index_l = i
-                                print(stats[i,cv2.CC_STAT_AREA])
+                                #print(stats[i,cv2.CC_STAT_AREA])
                         elif centroids[i,0] > margin_center_right:
                             plt.plot(centroids[i, 0], centroids[i, 1], "bo")
                             if centroids[i, 1] < ymin_r:
                                 ymin_r = centroids[i, 1]
                                 min_index_r = i
-                                print(stats[i, cv2.CC_STAT_AREA])
+                                #print(stats[i, cv2.CC_STAT_AREA])
 
     #getting left and right coordinates
     x_l = np.int(centroids[min_index_l,0])
