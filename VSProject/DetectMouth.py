@@ -5,14 +5,15 @@ import sys
 import os
 import math
 import Utilities as ut
+import matplotlib.pyplot as plt
 
 def getMouthPoints(onlyFaces, frame = None):
 
     #Get ROI which is the bottom half of the face
     nRows = len(onlyFaces[0]) 
-    halfnRows = math.floor(nRows/2)
+    halfnRows = int(math.floor(nRows/2))
     nColumns = len(onlyFaces[0][0])
-    bgrFace = (onlyFaces[0])[halfnRows:nRows,0:nColumns]
+    bgrFace = onlyFaces[0][halfnRows:nRows,0:nColumns]
     #Get mouth region
 
     #First get mask of regions possible to be a mouth by color
@@ -63,8 +64,12 @@ def getMouthPoints(onlyFaces, frame = None):
         #Neutralize effect of halving face for coord
         corners[0][0] += halfnRows
         corners[1][0] += halfnRows
-        
-    return corners
+
+        #plt.plot(corners[0][0], corners[0][1], "bo")
+        #plt.plot(corners[1][0], corners[1][1], "bo")
+
+    #return corners
+    return
 
 def iterateForMouthPoint(direction, maxLabel, bgrFace, boundingCoord, faceWidth, gryFace, mouthHeight, mouthWidth, labels):
     
@@ -107,16 +112,19 @@ def iterateForMouthPoint(direction, maxLabel, bgrFace, boundingCoord, faceWidth,
         for j in range(boundingCoord[0],boundingCoord[0]+mouthHeight):
             candidate = [j,corner[1]+i]
             dist = ut.getEuclideanDist(candidate, corner)
-            func = 1/gryFace[candidate[0], candidate[1]] + 1/dist
+            if dist != 0:
+                func = 1/gryFace[candidate[0], candidate[1]] + 1/dist
+            else:
+                func = 1/gryFace[candidate[0], candidate[1]]
             if max < func:
                 max = func
-                maxIndex = [candidate[0],candidate[1]]
+                maxIndex = [int(candidate[0]),int(candidate[1])]
         allVariances.append(variance)
         i+=direction
         iterationArr = gryFace[boundingCoord[0]:boundingCoord[0]+mouthHeight, corner[1]+i]
         gradient = cv2.Laplacian(iterationArr,cv2.CV_64F)
         variance = gradient.var()
-    cv2.circle(bgrFace,(maxIndex[1],maxIndex[0]),2,(0,255,0))
+    cv2.circle(bgrFace,(int(maxIndex[1]),int(maxIndex[0])),1,(0,255,0),2)
+
 
     return corner
-        

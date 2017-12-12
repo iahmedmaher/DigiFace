@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import math
+import matplotlib.pyplot as plt
 
 def getEyeFeatures(cimg, EyeBrows1, EyeBrows2, Dm):
     
@@ -31,12 +32,12 @@ def getEyeFeatures(cimg, EyeBrows1, EyeBrows2, Dm):
     De = math.sqrt(((EyeBrows1[0] - EyeBrows2[0]) ** 2) + ((EyeBrows1[1] - EyeBrows2[1]) ** 2))
     
     #width of the Eye region
-    M = math.ceil(De + 0.4 * max(Dm,De))
+    M = int(math.ceil(De + 0.4 * max(Dm,De)))
     #height of the Eye region
-    N = math.ceil(0.7 * max(Dm,De))
+    N = int(math.ceil(0.7 * max(Dm,De)))
 
     #grayscale image (img)
-    img = cv2.cvtColor(cimg,cv2.COLOR_BGR2GRAY)
+    img = cv2.cvtColor(cimg[0],cv2.COLOR_BGR2GRAY)
 
     x = np.zeros((2),int)
     y = np.zeros((2),int)
@@ -145,9 +146,9 @@ def getEyeFeatures(cimg, EyeBrows1, EyeBrows2, Dm):
 
         circles = np.uint16(np.around(circles))
         for i in circles[0,:]:
+            cv2.circle(cimg[0], (i[0], i[1]), 1, (0, 0, 255), 2)
             i[0] = i[0] + xstart
             i[1] = i[1] + ystart
             allcircles.append(i)
-       
 
     return allcircles
