@@ -93,8 +93,8 @@ def getEyeFeatures(cimg, EyeBrows1, EyeBrows2, Dm):
 
         #Estimate a value for the variance of pixel i,j
         for i in range(0, N):
-            for j in range(0, M):
-                vararrALL[i ,j] = min(vararrCOL[j],vararrROW[i])
+            for k in range(0, M):
+                vararrALL[i, k] = min(vararrCOL[k],vararrROW[i])
 
         #maximum estimated variance
         varmax = np.max(vararrALL)
