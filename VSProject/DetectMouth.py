@@ -26,6 +26,9 @@ def getMouthPoints(onlyFaces, frame = None):
     mask += cv2.inRange(hsvFace,lower,upper)
     components = mask
 
+    imC = cv2.applyColorMap(components, cv2.COLORMAP_JET)
+    cv2.imshow('areas',imC)
+
     #Get mouth as the biggest connected component in range of the color threshold
     regionAnalysis = cv2.connectedComponentsWithStats(mask, 4, cv2.CV_32S)
     nLabels = regionAnalysis[0]
@@ -107,10 +110,12 @@ def iterateForMouthPoint(direction, maxLabel, bgrFace, boundingCoord, faceWidth,
         for j in range(boundingCoord[0],boundingCoord[0]+mouthHeight):
             candidate = [j,corner[1]+i]
             dist = ut.getEuclideanDist(candidate, corner)
-            func = 1/gryFace[candidate[0], candidate[1]] + 1/dist
-            if max < func:
-                max = func
-                maxIndex = [candidate[0],candidate[1]]
+            invGray = gryFace[candidate[0], candidate[1]]
+            if dist < 20 and dist > 0 and invGray > 0: 
+                func = 1/invGray + 1/dist
+                if max < func:
+                    max = func
+                    maxIndex = [candidate[0],candidate[1]]
         allVariances.append(variance)
         i+=direction
         iterationArr = gryFace[boundingCoord[0]:boundingCoord[0]+mouthHeight, corner[1]+i]

@@ -6,5 +6,6 @@ def getFeaturePoints(onlyFaces, frame = None):
     featurePoints = []
     if len(onlyFaces) > 0 and len(onlyFaces) < 5:
         #call all feature points and concatenate        
-        featurePoints.append(mouth.getMouthPoints(onlyFaces, frame),eyebrows.getEyebrowsPoints(onlyFaces, frame))
+        featurePoints.append(mouth.getMouthPoints(onlyFaces, frame))
+        featurePoints.appped(eyebrows.getEyebrowsPoints(onlyFaces, frame))
     return featurePoints
