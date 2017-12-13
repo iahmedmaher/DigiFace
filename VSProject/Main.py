@@ -4,7 +4,7 @@ import DetectFace as dFace
 import FacialFeatures as dFeatures
 import OverlayMask as mask
 
-#video_capture = cv2.VideoCapture('http://192.168.1.8:4747/mjpegfeed')
+#video_capture = cv2.VideoCapture('http://192.168.43.94:4747/mjpegfeed')
 video_capture = cv2.VideoCapture(0)
 
 while True:
