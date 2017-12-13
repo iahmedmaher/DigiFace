@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import math
+import matplotlib.pyplot as plt
 
 def getEyeFeatures(cimg, EyeBrows1, EyeBrows2, Dm):
     
@@ -31,16 +32,17 @@ def getEyeFeatures(cimg, EyeBrows1, EyeBrows2, Dm):
     De = math.sqrt(((EyeBrows1[0] - EyeBrows2[0]) ** 2) + ((EyeBrows1[1] - EyeBrows2[1]) ** 2))
     
     #width of the Eye region
-    M = math.ceil(De + 0.4 * max(Dm,De))
+    M = int(math.ceil(De + 0.4 * max(Dm,De)))
     #height of the Eye region
-    N = math.ceil(0.7 * max(Dm,De))
+    N = int(math.ceil(0.7 * max(Dm,De)))
 
     #grayscale image (img)
-    img = cv2.cvtColor(cimg,cv2.COLOR_BGR2GRAY)
+    img = cv2.cvtColor(cimg[0],cv2.COLOR_BGR2GRAY)
+
+    H, W = np.shape(img)
 
     x = np.zeros((2),int)
     y = np.zeros((2),int)
-
 
     #(X[0].y[0]) is the starting position of the Left Eye region
     x[0] = math.floor(EyeBrows1[0] - M / 2)
@@ -53,20 +55,22 @@ def getEyeFeatures(cimg, EyeBrows1, EyeBrows2, Dm):
     #list containg found circles
     allcircles = []
 
+    #if width or height is zero
+    #or if the calculation results in something out of bounds
+    #then there is nothing to do...
+    #THIS SHOULD NOT HAPPEN anyway
+    if N == 0 or M == 0 or min(x[0],x[1])<0 or (max(x[0],x[1]) + M)>=W:
+        return allcircles
+
     #Loop for 2 eyes
     for j in range(0,2):
-        #if width or height is zero nothing to do...
-        #THIS SHOULD NOT HAPPEN anyway
-        if N == 0 or M == 0:
-            continue
 
         #start of current Eye region
         xstart = x[j]
         ystart = y[j]
-
         #Extract eye from gray image to do the calculation on it
         EyeRegion = img[ystart:ystart + N, xstart:xstart + M].copy()
-
+        
         #Use unsharp mask to sharpen the edges 
         #https://en.wikipedia.org/wiki/Unsharp_masking
         gaussian_3 = cv2.GaussianBlur(EyeRegion, ksize=(15,15), sigmaX=19.0, sigmaY=19.0)
@@ -124,12 +128,12 @@ def getEyeFeatures(cimg, EyeBrows1, EyeBrows2, Dm):
 
 
 
-        #For Debugging, Shows the Mask, and the Eye masked
-        cv2.imshow('Image Processing Project', vararrALL)
-        cv2.waitKey(0)
+        ##For Debugging, Shows the Mask, and the Eye masked
+        #cv2.imshow('Image Processing Project', vararrALL)
+        #cv2.waitKey(0)
 
-        cv2.imshow('Image Processing Project', EyeRegion)
-        cv2.waitKey(0)
+        #cv2.imshow('Image Processing Project', EyeRegion)
+        #cv2.waitKey(0)
 
 
         #Use hough transform to detect Eyes, 
@@ -139,15 +143,15 @@ def getEyeFeatures(cimg, EyeBrows1, EyeBrows2, Dm):
         #param1 : higher threshold of the two passed to the Canny edge detector (the lower one is twice smaller).
         #param2 : accumulator threshold for the circle centers at the detection stage. The smaller it is, the more false circles may be detected. Circles
                    
-        circles = cv2.HoughCircles(EyeRegion,cv2.HOUGH_GRADIENT,1,40, param1=70,param2=40,minRadius=5,maxRadius=60)
+        circles = cv2.HoughCircles(EyeRegion,cv2.HOUGH_GRADIENT,1,40, param1=70,param2=30,minRadius=5,maxRadius=60)
         if circles is None:
             continue
 
-        circles = np.uint16(np.around(circles))
-        for i in circles[0,:]:
-            i[0] = i[0] + xstart
-            i[1] = i[1] + ystart
-            allcircles.append(i)
-       
+        i = np.uint16(np.around(circles[0][0]))
+        
+        cv2.circle(cimg[0], (i[0], i[1]), 1, (0, 0, 255), 2)
+        i[0] = i[0] + xstart
+        i[1] = i[1] + ystart
+        allcircles.append(i)
 
     return allcircles
