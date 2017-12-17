@@ -3,6 +3,7 @@ from time import sleep
 import DetectFace as dFace
 import FacialFeatures as dFeatures
 import OverlayMask as mask
+import Preprocess as pre
 
 video_capture = cv2.VideoCapture('http://192.168.43.94:4747/mjpegfeed')
 #video_capture = cv2.VideoCapture(0)
@@ -19,6 +20,7 @@ while True:
     #**********OUR PART**********
     #Temp error handling
     try:
+        #frame = pre.PreProcessing(frame)
         onlyFaces = dFace.getFaceRegion(frame)
         featurePoints = dFeatures.getFeaturePoints(onlyFaces,frame) #frame is optional for easily debugging but your code should work if it is nil
         mask.overlayMask(onlyFaces,featurePoints)

@@ -26,9 +26,6 @@ def getMouthPoints(onlyFaces, frame = None):
     mask += cv2.inRange(hsvFace,lower,upper)
     components = mask
 
-    imC = cv2.applyColorMap(components, cv2.COLORMAP_JET)
-    cv2.imshow('areas',imC)
-
     #Get mouth as the biggest connected component in range of the color threshold
     regionAnalysis = cv2.connectedComponentsWithStats(mask, 4, cv2.CV_32S)
     nLabels = regionAnalysis[0]
