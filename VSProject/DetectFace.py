@@ -1,6 +1,6 @@
 import cv2
 
-def getFaceRegion(frame):
+def getFaceRegions(frame):
     cascPath = "haarcascade_frontalface_default.xml"
     faceCascade = cv2.CascadeClassifier(cascPath)
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
