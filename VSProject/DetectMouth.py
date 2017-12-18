@@ -33,9 +33,6 @@ def getMouthPoints(onlyFaces, frame = None):
     statsPerRegion = regionAnalysis[2]
 
     if len(statsPerRegion) > 1: 
-
-        cv2.normalize(labels, components, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8UC3)
-
         #Get max area
         maxArea = statsPerRegion[1, cv2.CC_STAT_AREA]
         maxLabel = 1
