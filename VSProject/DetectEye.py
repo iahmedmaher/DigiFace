@@ -143,15 +143,22 @@ def getEyeFeatures(cimg, EyeBrows1, EyeBrows2, Dm):
         #param1 : higher threshold of the two passed to the Canny edge detector (the lower one is twice smaller).
         #param2 : accumulator threshold for the circle centers at the detection stage. The smaller it is, the more false circles may be detected. Circles
                    
-        circles = cv2.HoughCircles(EyeRegion,cv2.HOUGH_GRADIENT,1,40, param1=70,param2=30,minRadius=5,maxRadius=60)
+        circles = cv2.HoughCircles(EyeRegion,cv2.HOUGH_GRADIENT,1,40, param1=70,param2=20,minRadius=5,maxRadius=60)
         if circles is None:
             continue
+        
 
         i = np.uint16(np.around(circles[0][0]))
-        
-        cv2.circle(cimg[0], (i[0], i[1]), 1, (0, 0, 255), 2)
+
+
         i[0] = i[0] + xstart
         i[1] = i[1] + ystart
+
+        cv2.circle(cimg[0], (i[0],i[1]), i[2], (0,255,0),2)
+        cv2.circle(cimg[0], (i[0], i[1]), 1, (0, 0, 255), 2)
+
         allcircles.append(i)
+
+
 
     return allcircles

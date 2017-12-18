@@ -6,7 +6,7 @@ import OverlayMask as mask
 import Preprocess as pre
 import DetectFaceTrial as dF
 
-video_capture = cv2.VideoCapture('http://192.168.1.2:4747/mjpegfeed')
+video_capture = cv2.VideoCapture('http://192.168.1.5:4747/mjpegfeed')
 #video_capture = cv2.VideoCapture(0)
 
 while True:
