@@ -56,7 +56,7 @@ def getMouthPoints(onlyFaces, frame = None):
         corners = []
         corners.append(iterateForMouthPoint(-1, maxLabel, bgrFace, boundingCoord, nColumns, gryFace, mouthHeight, mouthWidth, labels))
         corners.append(iterateForMouthPoint(1, maxLabel, bgrFace, boundingCoord, nColumns, gryFace, mouthHeight, mouthWidth, labels))
-
+        corners.append([mouthHeight])
         #Neutralize effect of halving face for coord
         corners[0][0] += halfnRows
         corners[1][0] += halfnRows
@@ -99,8 +99,9 @@ def iterateForMouthPoint(direction, maxLabel, bgrFace, boundingCoord, faceWidth,
     maxIndex = corner
     allVariances = []
     variance = cv2.Laplacian(iterationArr,cv2.CV_64F).var()
-    while abs(variance) > 9 and abs(i) < faceWidth*0.1:
-        
+    #while abs(variance) > 9 and abs(i) < faceWidth*0.1:
+    while abs(variance) > 9: 
+    
         for j in range(boundingCoord[0],boundingCoord[0]+mouthHeight):
             candidate = [j,corner[1]+i]
             dist = ut.getEuclideanDist(candidate, corner)

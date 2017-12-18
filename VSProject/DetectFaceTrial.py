@@ -88,6 +88,9 @@ def getFaceRegions(frame):
                     extent = area/boxArea
 
                     if extent > 0.45 and extent < 0.9:
+                        widthMargin = math.floor(width*0.15)
+                        xStart -= widthMargin
+                        width += 2*widthMargin
                         onlyFaces.append(frame[yStart:yStart+height,xStart:xStart+width,0:3])
                         cv2.rectangle(frame,(xStart,yStart),(xStart+width, yStart+height),(255,0,0),4)
 

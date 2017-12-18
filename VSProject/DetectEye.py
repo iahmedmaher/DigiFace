@@ -132,7 +132,7 @@ def getEyeFeatures(cimg, EyeBrows1, EyeBrows2, Dm):
         #cv2.imshow('Image Processing Project', vararrALL)
         #cv2.waitKey(0)
 
-        #cv2.imshow('Image Processing Project', EyeRegion)
+        cv2.imshow('Image Processing Project', EyeRegion)
         #cv2.waitKey(0)
 
 

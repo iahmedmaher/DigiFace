@@ -9,7 +9,15 @@ import DetectFaceTrial as dF
 video_capture = cv2.VideoCapture('http://192.168.1.2:4747/mjpegfeed')
 #video_capture = cv2.VideoCapture(0)
 
+#Load Masks Once
+mouthMask = cv2.imread('mouthMask.jpg')
+eyebrowMask = cv2.imread('eyebrowMask.png')
+
+frameCounter = 0
+featurePoints = []
+onlyFaces = []
 while True:
+    frameCounter+=1
     if not video_capture.isOpened():
         print('Unable to load camera.')
         sleep(5)
@@ -17,14 +25,16 @@ while True:
 
     # Capture frame-by-frame
     ret, frame = video_capture.read()
+
+    
     #**********OUR PART**********
     #Temp error handling
     try:
         #frame = pre.PreProcessing(frame)
-        dF.getFaceRegions(frame)
+        #dF.getFaceRegions(frame)
         onlyFaces = dFace.getFaceRegions(frame)
         featurePoints = dFeatures.getFeaturePoints(onlyFaces,frame) #frame is optional for easily debugging but your code should work if it is nil
-        #mask.overlayMask(onlyFaces,featurePoints)
+        mask.overlayMask(onlyFaces,featurePoints, mouthMask, eyebrowMask)
     except Exception:
         pass
     #****************************
