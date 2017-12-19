@@ -69,7 +69,7 @@ def getEyeFeatures(cimg, EyeBrows1, EyeBrows2, Dm):
         xstart = x[j]
         ystart = y[j]
         #Extract eye from gray image to do the calculation on it
-        EyeRegion = img[ystart:ystart + N, xstart:xstart + M].copy()
+        EyeRegion = img[ystart:ystart + N, xstart:xstart + M]
         
         #Use unsharp mask to sharpen the edges 
         #https://en.wikipedia.org/wiki/Unsharp_masking
@@ -132,7 +132,7 @@ def getEyeFeatures(cimg, EyeBrows1, EyeBrows2, Dm):
         #cv2.imshow('Image Processing Project', vararrALL)
         #cv2.waitKey(0)
 
-        cv2.imshow('Image Processing Project', EyeRegion)
+        #cv2.imshow('Image Processing Project', EyeRegion)
         #cv2.waitKey(0)
 
 

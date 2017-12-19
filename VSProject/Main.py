@@ -8,12 +8,13 @@ import DetectFaceTrial as dF
 import sys
 
 video_capture = cv2.VideoCapture('http://192.168.1.2:4747/mjpegfeed')
-#video_capture = cv2.VideoCapture(0)
+video_capture.set(cv2.CAP_PROP_BUFFERSIZE,0)
 
 #Load Masks Once
 mouthMask = cv2.imread('mouthMask.jpg')
 eyebrowMask = cv2.imread('eyebrowMask.png')
 eyeMask = cv2.imread('eyeMask.jpeg')
+
 while True:
     if not video_capture.isOpened():
         print('Unable to load camera.')
