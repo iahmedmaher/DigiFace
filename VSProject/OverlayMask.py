@@ -4,7 +4,7 @@ import math
 import Utilities as ut
 import sys
 
-def overlayMasks(onlyFaces, featurePoints, mouthMask, eyebrowMask):
+def overlayMasks(onlyFaces, featurePoints, mouthMask, eyebrowMask, eyeMask):
     if len(featurePoints) < 2 or len(onlyFaces) < 1:
         return
    
@@ -39,18 +39,32 @@ def overlayMasks(onlyFaces, featurePoints, mouthMask, eyebrowMask):
         temp = eyebrowR[0]
         eyebrowR[0] = eyebrowR[1]
         eyebrowR[1] = temp
-        #Set Mask Specific Parameters
-        mbackBGR = [255, 255, 255]
+        #Set Mask Specific Parameter
         imaskR = [411, 651]
         imaskL = [0,0]
         #Provide rotation cuz single point
         angle = ut.getRotationFrom2Pts(eyebrowL,eyebrowR)
         #Overlay
-        overlayMask(onlyFaces[0],eyebrowMask,eyebrowL,backBGR=mbackBGR,maskL=imaskL,maskR=imaskR,rotAngle=angle)
+        overlayMask(onlyFaces[0],eyebrowMask,eyebrowL,maskL=imaskL,maskR=imaskR,rotAngle=angle)
     except:
         print("Unexpected error:", sys.exc_info()[0])
         pass
 
+    #Add eye mask********************************
+    try:
+        eyeR = featurePoints[2][1][0:2]
+        temp = eyeR[0]
+        eyeR[0] = eyeR[1]
+        eyeR[1] = temp
+        radiusR = featurePoints[2][1][2]
+        h,w,c = eyeMask.shape
+        center = [0,0]
+        center[0] = math.floor(h/2)
+        center[1] = math.floor(w/2)
+        overlayMask(onlyFaces[0],eyeMask,eyeR,eyeR,maskL=center,maskR=center,actualHeight=radiusR*3,actualWidth=radiusR*3,rotAngle=0)
+    except:
+        print("Unexpected error:", sys.exc_info()[0])
+        pass
 
 
 def overlayMask(face,mask,ptR,ptL=[0,0],backBGR=[255,255,255],maskL=[-1,-1],maskR=[-1,-1],rotAngle=-500,actualWidth = 0, actualHeight = 0):
