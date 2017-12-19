@@ -7,9 +7,13 @@ def getEuclideanDist(a,b):
 
 def getRotationFrom2Pts(pt1, pt2):
     hyp = getEuclideanDist(pt1,pt2)
-    base = pt2[0] - pt1[0]
+    base = pt2[1] - pt1[1]
     angle = math.degrees(math.acos(base/hyp))
-    if pt1[1] > pt2[1]:
+    if pt1[0] > pt2[0]:
         return angle
     else:
         return angle*-1
+
+
+
+

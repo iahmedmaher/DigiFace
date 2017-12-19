@@ -2,93 +2,98 @@ import cv2
 import numpy as np
 import math
 import Utilities as ut
+import sys
 
-#THINGS SURELY NEED TO BE MODULAR*****************************************************************************
-def overlayMask(onlyFaces, featurePoints, mouthMask, eyebrowMask):
+def overlayMasks(onlyFaces, featurePoints, mouthMask, eyebrowMask):
     if len(featurePoints) < 2 or len(onlyFaces) < 1:
         return
+   
+
+    #Add mouth Mask********************************
+    try:
+        #Get mouth parameters
+        mouthL = featurePoints[0][0]
+        mouthR = featurePoints[0][1]
+        mouthWidth = mouthR[1]-mouthL[1]
+        mouthHeight = math.floor(mouthWidth*0.35)
+        #Set mask specific parameters
+        backBGR = [25, 25, 25]
+        maskL = [67, 17]
+        maskR = [67, 509]
+        #Overlay
+        overlayMask(onlyFaces[0],mouthMask,mouthR,mouthL,backBGR,maskL,maskR,actualHeight=mouthHeight) 
+    except:
+        print("Unexpected error:", sys.exc_info()[0])
+        pass
+
+
+    #Add eyebrow mask********************************
+    try:
+        #Get parameters
+        eyebrowL = featurePoints[1][0]
+        eyebrowR = featurePoints[1][1]
+        #Inverse to max i = rows j = columns
+        temp = eyebrowL[0]
+        eyebrowL[0] = eyebrowL[1]
+        eyebrowL[1] = temp
+        temp = eyebrowR[0]
+        eyebrowR[0] = eyebrowR[1]
+        eyebrowR[1] = temp
+        #Set Mask Specific Parameters
+        mbackBGR = [255, 255, 255]
+        imaskR = [411, 651]
+        imaskL = [0,0]
+        #Provide rotation cuz single point
+        angle = ut.getRotationFrom2Pts(eyebrowL,eyebrowR)
+        #Overlay
+        overlayMask(onlyFaces[0],eyebrowMask,eyebrowL,backBGR=mbackBGR,maskL=imaskL,maskR=imaskR,rotAngle=angle)
+    except:
+        print("Unexpected error:", sys.exc_info()[0])
+        pass
+
+
+
+def overlayMask(face,mask,ptR,ptL=[0,0],backBGR=[255,255,255],maskL=[-1,-1],maskR=[-1,-1],rotAngle=-500,actualWidth = 0, actualHeight = 0):
     
-    #Get Rotation Angle    
-    angle = ut.getRotationFrom2Pts(featurePoints[1][0],featurePoints[1][1])
-
-    face1 = onlyFaces[0]
-
-    #Add mouth Mask
+    intialMaskHeight,intialMaskWidth,intialMaskChannels = mask.shape
     
-    #Get mask
-    mouthL = featurePoints[0][0]
-    mouthR = featurePoints[0][1]
-    mouthWidth = mouthR[1]-mouthL[1]
-    mouthHeight = math.floor(mouthWidth*0.35)
-
-    #Mask Specific
-    h,w,c = mouthMask.shape
-    backBGR = [25, 25, 25]
-    maskL = [67, 17]
-    maskR = [67, 509]
-    heightFactor = 2
+    #Provide mask centers and rotation angle if not provided
+    if maskL == [-1,-1]:
+        maskL[0] = math.floor(intialMaskHeight/2)
+        maskL[1] = 0
+    if maskR == [-1,-1]:
+        maskR[0] = math.floor(intialMaskHeight/2)
+        maskR[1] = intialMaskWidth
 
     #Resize mask
-    width = math.floor((mouthWidth/(maskR[1]-maskL[1]))*w)
-    height = mouthHeight * heightFactor
-    mouthMask = cv2.resize(mouthMask, (width,height))
+    if actualWidth == 0:
+        actualWidth = math.floor(((ptR[1]-ptL[1])/(maskR[1]-maskL[1]))*intialMaskWidth)
 
-    #Get Rotation Angle from two points and rotate mask
-    Trans = cv2.getRotationMatrix2D((math.floor(width/2),math.floor(height/2)),angle,1)
-    mouthMask = cv2.warpAffine(mouthMask,Trans,(width,height))
+    if actualHeight == 0:
+        actualHeight = ptR[0]
 
-    #Get coordinates
+    mask = cv2.resize(mask, (actualWidth,actualHeight))
+
+    #Rotate Mask
+    if rotAngle == -500:
+        rotAngle = ut.getRotationFrom2Pts(ptL,ptR)
+
+    transformation = cv2.getRotationMatrix2D((math.floor(actualWidth/2),math.floor(actualHeight/2)),rotAngle,1)
+    mask = cv2.warpAffine(mask,transformation,(actualWidth,actualHeight))
+
+    #Get coordinates offset
     coord = [0.0,0.0]
-    coord[0] = mouthL[0] - math.ceil(maskL[0]*height/h) 
-    coord[1] = mouthL[1] - math.ceil(maskL[1]*width/w) 
+    coord[0] = ptR[0] - math.ceil(maskR[0]*actualHeight/intialMaskHeight) 
+    coord[1] = ptR[1] - math.ceil(maskR[1]*actualWidth/intialMaskWidth) 
 
     #Overlay
-    B = mouthMask[0:height,0:width,0]
-    G = mouthMask[0:height,0:width,1]
-    R = mouthMask[0:height,0:width,2]
+    B = mask[0:actualHeight,0:actualWidth,0]
+    G = mask[0:actualHeight,0:actualWidth,1]
+    R = mask[0:actualHeight,0:actualWidth,2]
 
-    indicesForMask = np.where( (B!=backBGR[0]) & (G!=backBGR[1]) & (R!=backBGR[2]) & (B!=0) & (G!=0) & (R!=0))
-    maskRegion = mouthMask[indicesForMask]
+    indicesForMask = np.where(  ((B!=backBGR[0]) | (G!=backBGR[1]) | (R!=backBGR[2])) & ( (B!=0) | (G!=0) | (R!=0) ) )
+    maskRegion = mask[indicesForMask]
     indicesForMaskOffset = list(indicesForMask)
     indicesForMaskOffset[0] += coord[0]
     indicesForMaskOffset[1] += coord[1]
-    face1[indicesForMaskOffset] = maskRegion
-
-
-    #Get mask
-    eyebrowL = featurePoints[1][0]
-    eyebrowR = featurePoints[1][1]
-
-    #Mask Specific
-    h,w,c = eyebrowMask.shape
-    backBGR = [255, 255, 255]
-    maskL = [411, 651]
-    
-    #Resize mask
-    width = math.floor((eyebrowL[0]/maskL[1])*w)
-    height = eyebrowL[1]
-    eyebrowMask = cv2.resize(eyebrowMask, (width,height))
-
-    #Get Rotation Angle from two points and rotate mask
-    Trans = cv2.getRotationMatrix2D((math.floor(width/2),math.floor(height/2)),angle,1)
-    eyebrowMask = cv2.warpAffine(eyebrowMask,Trans,(width,height))
-
-    #Get coordinates
-    coord = [0.0,0.0]
-    coord[0] = eyebrowL[1] - math.ceil(maskL[0]*height/h) 
-    coord[1] = eyebrowL[0] - math.ceil(maskL[1]*width/w) 
-
-    #Overlay
-    B = eyebrowMask[0:height,0:width,0]
-    G = eyebrowMask[0:height,0:width,1]
-    R = eyebrowMask[0:height,0:width,2]
-
-    indicesForMask = np.where( (B!=backBGR[0]) & (G!=backBGR[1]) & (R!=backBGR[2]))
-    maskRegion = eyebrowMask[indicesForMask]
-    indicesForMaskOffset = list(indicesForMask)
-    indicesForMaskOffset[0] += coord[0]
-    indicesForMaskOffset[1] += coord[1]
-    face1[indicesForMaskOffset] = maskRegion
-
-    return
-
+    face[indicesForMaskOffset] = maskRegion

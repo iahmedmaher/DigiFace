@@ -6,7 +6,7 @@ import OverlayMask as mask
 import Preprocess as pre
 import DetectFaceTrial as dF
 
-video_capture = cv2.VideoCapture('http://192.168.1.5:4747/mjpegfeed')
+video_capture = cv2.VideoCapture('http://192.168.1.2:4747/mjpegfeed')
 #video_capture = cv2.VideoCapture(0)
 
 #Load Masks Once
@@ -34,7 +34,7 @@ while True:
         #dF.getFaceRegions(frame)
         onlyFaces = dFace.getFaceRegions(frame)
         featurePoints = dFeatures.getFeaturePoints(onlyFaces,frame) #frame is optional for easily debugging but your code should work if it is nil
-        mask.overlayMask(onlyFaces,featurePoints, mouthMask, eyebrowMask)
+        mask.overlayMasks(onlyFaces,featurePoints, mouthMask, eyebrowMask)
     except Exception:
         pass
     #****************************

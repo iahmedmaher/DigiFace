@@ -99,8 +99,8 @@ def iterateForMouthPoint(direction, maxLabel, bgrFace, boundingCoord, faceWidth,
     maxIndex = corner
     allVariances = []
     variance = cv2.Laplacian(iterationArr,cv2.CV_64F).var()
-    #while abs(variance) > 9 and abs(i) < faceWidth*0.1:
-    while abs(variance) > 9: 
+    while abs(variance) > 9 and abs(i) < faceWidth*0.1:
+    #while abs(variance) > 9: 
     
         for j in range(boundingCoord[0],boundingCoord[0]+mouthHeight):
             candidate = [j,corner[1]+i]
