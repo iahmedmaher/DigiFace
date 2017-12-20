@@ -70,9 +70,8 @@ def getEyeFeatures(cimg, EyeBrows1, EyeBrows2, Dm):
     if N == 0 or M == 0 or min(x[0],x[1])<0 or (max(x[0],x[1]) + M)>=W:
         return allcircles
 
-    allcircles.append([0,0,0])
     #Loop for 2 eyes
-    for j in range(1,2):
+    for j in range(0,2):
 
         #start of current Eye region
         xstart = x[j]
