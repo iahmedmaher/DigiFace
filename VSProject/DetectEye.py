@@ -29,6 +29,7 @@ def getEyeFeatures(cimg, EyeBrows1, EyeBrows2, Dm):
     """
 
     #De = Distance between the 2 EyeBrows centers
+    Dm = abs(Dm)
     De = math.sqrt(((EyeBrows1[0] - EyeBrows2[0]) ** 2) + ((EyeBrows1[1] - EyeBrows2[1]) ** 2))
     
     #width of the Eye region
@@ -59,6 +60,13 @@ def getEyeFeatures(cimg, EyeBrows1, EyeBrows2, Dm):
     #or if the calculation results in something out of bounds
     #then there is nothing to do...
     #THIS SHOULD NOT HAPPEN anyway
+
+    #Try to Fix invalid calculations first
+    x[0] = max(0,x[0])
+    x[1] = max(0,x[1])
+    x[0] = min(W-1-M,x[0])
+    x[1] = min(W-1-M,x[1])
+
     if N == 0 or M == 0 or min(x[0],x[1])<0 or (max(x[0],x[1]) + M)>=W:
         return allcircles
 
