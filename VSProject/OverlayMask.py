@@ -4,7 +4,7 @@ import math
 import Utilities as ut
 import sys
 
-def overlayMasks(onlyFaces, featurePoints, mouthMask, eyebrowMask, eyeMask):
+def overlayMasks(onlyFaces, featurePoints, mouthMask, eyebrowMask, eyeMask,mask_choice):
     if len(featurePoints) < 2 or len(onlyFaces) < 1:
         return
    
@@ -17,9 +17,14 @@ def overlayMasks(onlyFaces, featurePoints, mouthMask, eyebrowMask, eyeMask):
         mouthWidth = mouthR[1]-mouthL[1]
         mouthHeight = math.floor(mouthWidth*0.35)
         #Set mask specific parameters
-        backBGR = [25, 25, 25]
-        maskL = [67, 17]
-        maskR = [67, 509]
+        if(mask_choice=='1'):
+            backBGR = [25, 25, 25]
+            maskL = [67, 17]
+            maskR = [67, 509]
+        else:
+             backBGR = [255, 255, 255]
+             maskL = [6,7]
+             maskR = [5,299]
         #Overlay
         overlayMask(onlyFaces[0],mouthMask,mouthR,mouthL,backBGR,maskL,maskR,actualHeight=mouthHeight) 
     except:
